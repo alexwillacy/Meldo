@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MELDO — Make something.</title>
+<style>
+:root{
+  --bg:#0a0a0d; --panel:#111116; --panel2:#17171e; --soft:#20202a;
+  --text:#f6f6f8; --muted:#9a9aa7; --line:#2a2a34; --accent:#ff8a1f; --accent2:#8b43d7; --cyan:#27c8d7; --pink:#eb4f9a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea,select{font:inherit} button{cursor:pointer}
+.app{display:grid;grid-template-columns:220px minmax(0,800px) 320px;gap:22px;max-width:1370px;margin:auto;padding:0 20px}
+.left,.right{height:100vh;position:sticky;top:0}.left{padding:24px 0}.right{padding:20px 0}
+.brand{font-size:26px;font-weight:950;letter-spacing:-1px;margin-bottom:28px}.brand span{color:var(--accent)}
+.nav button{display:block;width:100%;background:none;border:0;color:var(--muted);text-align:left;padding:13px;border-radius:11px;font-weight:850;margin:3px 0}
+.nav button:hover,.nav button.active{background:var(--panel2);color:var(--text)}
+.create{width:100%;margin-top:18px;padding:13px;border:0;border-radius:12px;background:var(--accent);font-weight:950;color:#080808}
+.center{padding:18px 0 60px}.top{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 82%,transparent);padding-bottom:10px}
+.search{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text)}
+.pageTitle{font-size:30px;margin:8px 0 16px;letter-spacing:-1px}
+.stories{display:flex;gap:12px;overflow:auto;padding:14px 0}
+.story{min-width:80px;text-align:center;color:var(--muted);font-size:12px}
+.ring{width:62px;height:62px;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin:auto}
+.ring>div{width:100%;height:100%;border-radius:50%;background:#202028;display:grid;place-items:center;color:white;font-weight:900}
+.card,.composer,.sidecard{background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.composer{padding:15px;margin-bottom:14px}.composer textarea{width:100%;min-height:68px;resize:none;background:transparent;border:0;outline:0;color:var(--text)}
+.row{display:flex;align-items:center;gap:10px}.wrap{flex-wrap:wrap}.between{justify-content:space-between}
+.chip,.btn,.mini{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:999px;padding:8px 11px;font-size:12px;font-weight:850}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#080808}.btn.square{border-radius:10px}
+.tabs{display:flex;gap:8px;margin:12px 0}.tabs button{background:none;border:0;color:var(--muted);padding:8px 10px;font-weight:900}.tabs button.active{color:var(--text);border-bottom:2px solid var(--accent)}
+.post{margin-bottom:14px;overflow:hidden}.post-head{display:flex;align-items:center;gap:10px;padding:14px 16px}
+.ava{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:950;background:linear-gradient(135deg,#ff8a65,#7c5cff)}
+.post-head b{display:block}.post-head small{color:var(--muted)}.status{font-size:11px;color:var(--accent);margin-top:3px}.more{margin-left:auto;color:var(--muted)}
+.post-body{padding:0 16px 14px}.post-body p{line-height:1.5}.media{min-height:220px;border-radius:12px;background:linear-gradient(135deg,#242431,#15151c);display:grid;place-items:center;font-size:42px;color:#ddd;margin-top:12px}
+.project-link{margin-top:12px;padding:12px;border:1px solid var(--line);background:var(--panel2);border-radius:12px}.project-link strong{display:block}.project-link small{color:var(--muted)}
+.post-actions{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line)}.post-actions button{background:none;border:0;color:var(--muted);padding:11px 5px;font-weight:850}.post-actions button:hover,.post-actions .liked{color:var(--accent);background:#17171d}
+.comments{padding:10px 14px;border-top:1px solid var(--line)}.comment{font-size:13px;padding:6px 0;color:#d6d6dd}.commentbox{display:flex;gap:8px;margin-top:6px}.commentbox input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:999px;color:#fff;padding:9px 12px}.commentbox button{border:0;background:var(--accent);font-weight:900;border-radius:999px;padding:8px 12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{padding:16px}.card h3{margin:8px 0}.card p{color:var(--muted);font-size:13px;line-height:1.45}.tag{font-size:11px;color:var(--accent);font-weight:950;text-transform:uppercase}
+.meta{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.meta span{background:var(--panel2);border-radius:8px;padding:6px 8px;color:#cfcfd8;font-size:12px}
+.people{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.person{text-align:center}.bigava{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-size:23px;font-weight:950;background:linear-gradient(135deg,#ff8a65,#7c5cff);margin:0 auto 10px}
+.sidecard{padding:16px;margin-bottom:14px}.sidecard h3{margin:0 0 12px}.personrow{display:flex;align-items:center;gap:10px;padding:9px 0}.personrow .ava{width:36px;height:36px}.personrow button{margin-left:auto}
+.challenge{padding:14px;border-radius:12px;background:linear-gradient(135deg,#281c3d,#13131a)}.challenge h4{font-size:24px;margin:5px 0}.challenge p{color:var(--muted);font-size:13px;line-height:1.45}
+.projectHero{padding:20px;margin-bottom:14px}.projectHero h1{margin:8px 0 6px;font-size:38px;letter-spacing:-1.5px}.projectHero p{color:var(--muted);max-width:700px}.projectTabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.workspace{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.panel{padding:16px}.panel h3{margin-top:0}.task{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.task:last-child{border-bottom:0}.file{padding:9px;background:var(--panel2);border-radius:10px;margin:8px 0}.credit{padding:9px 0;border-bottom:1px solid var(--line)}.credit:last-child{border-bottom:0}
+.overlay{display:none;position:fixed;inset:0;background:#000a;z-index:30;align-items:center;justify-content:center;padding:20px}.overlay.show{display:flex}.modal{width:min(680px,100%);max-height:88vh;overflow:auto;background:#111117;border:1px solid var(--line);border-radius:18px;padding:20px}.close{float:right;border:0;background:none;color:var(--muted);font-size:25px}
+.form{display:grid;gap:12px}.form input,.form textarea,.form select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px;color:#fff}.form textarea{min-height:110px}
+.toast{position:fixed;right:24px;bottom:24px;background:var(--accent);color:#080808;padding:11px 15px;border-radius:10px;font-weight:950;display:none;z-index:40}
+
+.brand-lockup{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:28px}
+.brand-mark-wrap{width:45px;height:45px;border-radius:12px;overflow:hidden;background:#0b0d13;box-shadow:0 0 0 1px #242633 inset}
+.brand-mark-wrap img{width:160px;height:90px;object-fit:cover;object-position:0% 0%;transform:translate(-2px,-7px)}
+.brand-text{display:flex;flex-direction:column;line-height:1}
+.brand-text strong{font-size:20px;letter-spacing:3px}
+.brand-text small{font-size:7px;letter-spacing:1.2px;color:var(--muted);margin-top:5px}
+.meldo-hero{position:relative;overflow:hidden;background:
+ radial-gradient(circle at 15% 0%, rgba(255,138,31,.18), transparent 35%),
+ radial-gradient(circle at 85% 15%, rgba(39,200,215,.14), transparent 30%),
+ linear-gradient(135deg,#15151d,#0d0e13)}
+.meldo-hero:after{content:"";position:absolute;right:-60px;bottom:-90px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(139,67,215,.22),transparent 65%)}
+.meldo-hero h1{font-size:clamp(38px,6vw,72px);line-height:.95;letter-spacing:-3px;margin:10px 0 14px}
+.meldo-hero p{max-width:650px}
+.brand-gradient{background:linear-gradient(90deg,#ff9d1f,#ee4e9a,#9c42d9,#27c8d7);-webkit-background-clip:text;background-clip:text;color:transparent}
+.playground-label{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--cyan);font-weight:950}
+.meldo-promise{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.promise{padding:12px;background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:12px}
+.promise b{display:block;font-size:13px}.promise span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.nav button.active{box-shadow:inset 3px 0 0 var(--accent)}
+.btn.primary{background:linear-gradient(90deg,#ff9d1f,#eb4f9a,#8b43d7);color:#fff;border-color:transparent}
+.create{background:linear-gradient(90deg,#ff9d1f,#eb4f9a,#8b43d7);color:#fff}
+.tag{color:var(--cyan)}
+.status{color:var(--cyan)}
+.ring{background:linear-gradient(135deg,#ff9d1f,#eb4f9a,#8b43d7,#27c8d7)}
+.toast{background:linear-gradient(90deg,#ff9d1f,#eb4f9a,#8b43d7);color:#fff}
+@media(max-width:760px){.meldo-promise{grid-template-columns:repeat(2,1fr)}}
+
+
+.spotHero{padding:24px;margin-bottom:16px;background:
+ radial-gradient(circle at 15% 10%,rgba(255,157,31,.16),transparent 32%),
+ radial-gradient(circle at 82% 18%,rgba(39,200,215,.13),transparent 28%),
+ linear-gradient(135deg,#15151d,#0d0e13);position:relative;overflow:hidden}
+.spotHero h1{font-size:clamp(40px,6vw,72px);line-height:.94;letter-spacing:-3px;margin:8px 0 12px}
+.spotHero p{max-width:680px;color:var(--muted);line-height:1.55}
+.spotHero:after{content:"MADE THIS WEEK";position:absolute;right:-15px;bottom:-15px;font-size:70px;font-weight:950;letter-spacing:-4px;color:rgba(255,255,255,.025)}
+.overallSpot{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;padding:18px;margin-bottom:20px}
+.spotVisual{min-height:270px;border-radius:16px;background:
+ linear-gradient(135deg,rgba(255,157,31,.20),rgba(235,79,154,.15),rgba(39,200,215,.15));display:grid;place-items:center;font-size:62px}
+.spotBadge{display:inline-flex;align-items:center;gap:6px;background:#241c13;border:1px solid #604120;color:#ffcb7c;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:950}
+.spotGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.spotCard{position:relative;overflow:hidden}
+.spotCard:after{content:"";position:absolute;right:-45px;top:-45px;width:115px;height:115px;border-radius:50%;background:radial-gradient(circle,rgba(139,67,215,.18),transparent 65%)}
+.spotCard h3{font-size:20px}
+.spotStats{display:flex;gap:10px;color:var(--muted);font-size:11px;margin:12px 0}
+.spotTabs{display:flex;gap:8px;overflow:auto;padding-bottom:8px;margin:12px 0 16px}
+.spotTabs button{white-space:nowrap}
+.shareSpot{margin-top:18px;padding:18px;border-radius:16px;background:
+ linear-gradient(135deg,#18121c,#121820);border:1px solid var(--line)}
+.shareSpot p{color:var(--muted)}
+.spotCredit{padding:9px 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.spotCredit b{color:var(--text)}
+@media(max-width:760px){.overallSpot,.spotGrid{grid-template-columns:1fr}}
+
+@media(max-width:1100px){.app{grid-template-columns:85px minmax(0,1fr)}.right{display:none}.brand{font-size:17px;text-align:center}.brand span{display:none}.nav button{font-size:0;text-align:center}.nav button:before{font-size:20px}.nav button:nth-child(1):before{content:"⌂"}.nav button:nth-child(2):before{content:"⌕"}.nav button:nth-child(3):before{content:"🏆"}.nav button:nth-child(4):before{content:"✦"}.nav button:nth-child(5):before{content:"✉"}.nav button:nth-child(6):before{content:"☺"}.create{font-size:0}.create:before{content:"+";font-size:21px}}
+@media(max-width:760px){.app{display:block;padding:0 12px}.left{display:none}.center{padding-top:10px}.grid,.people,.workspace{grid-template-columns:1fr}.post-actions{grid-template-columns:repeat(5,1fr)}.post-actions button{font-size:11px}.media{min-height:170px}}
+
+/* MELDO professional brand system */
+:root{
+  --bg:#0b0d10;
+  --panel:#111419;
+  --panel2:#171b21;
+  --soft:#20252d;
+  --text:#f4f2ee;
+  --muted:#9ca2ab;
+  --line:#272d36;
+  --accent:#8a5cff;
+  --accent2:#f1458d;
+  --orange:#ff7a45;
+  --warm:#f7f5f0;
+  --ink:#0b0d10;
+}
+body{background:var(--bg);letter-spacing:-.01em}
+.app{grid-template-columns:220px minmax(0,820px) 300px;gap:24px;max-width:1390px}
+.left{padding-top:26px}.right{padding-top:22px}.center{padding-top:20px}
+.brand-lockup{gap:12px;margin-bottom:34px}
+.meldo-mark{position:relative;width:43px;height:34px;flex:0 0 43px}
+.meldo-mark span{position:absolute;top:4px;width:13px;height:29px;border-radius:999px;transform:rotate(31deg);background:linear-gradient(180deg,var(--accent),var(--accent2) 58%,var(--orange))}
+.meldo-mark span:first-child{left:8px;transform:rotate(31deg)}
+.meldo-mark span:last-child{left:22px;transform:rotate(-31deg);background:linear-gradient(180deg,var(--orange),var(--accent2) 45%,var(--accent))}
+.brand-text strong{font-size:19px;letter-spacing:5px;font-weight:800}
+.brand-text small{font-size:7px;letter-spacing:1.8px;color:#767e89;margin-top:6px}
+.nav button{font-weight:700;padding:12px 13px;border-radius:10px}
+.nav button:hover,.nav button.active{background:#15191f;color:var(--text)}
+.nav button.active{box-shadow:inset 2px 0 0 #f1458d}
+.create{background:linear-gradient(90deg,var(--accent2),var(--orange));border-radius:10px;color:white;font-weight:800;box-shadow:none}
+.search{background:#101318;border-color:#242a33;border-radius:10px;padding:13px 15px}
+.card,.composer,.sidecard{background:var(--panel);border-color:#242a33;border-radius:14px;box-shadow:none}
+.meldo-hero{padding:34px!important;background:linear-gradient(135deg,#11151a,#0c0f13)!important;border-color:#242a33!important}
+.meldo-hero:before{content:"";position:absolute;right:-40px;top:-70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(241,69,141,.10),transparent 65%);pointer-events:none}
+.meldo-hero:after{content:"";position:absolute;right:80px;bottom:-100px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(138,92,255,.09),transparent 65%);pointer-events:none}
+.meldo-hero h1{font-size:clamp(48px,7vw,76px);letter-spacing:-4px;line-height:.96;margin:8px 0 16px;max-width:690px}
+.brand-gradient{background:linear-gradient(90deg,#a16cff 5%,#f1458d 55%,#ff7a45 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.playground-label{font-size:10px;letter-spacing:2px;color:#9ca2ab}
+.meldo-hero p{font-size:15px;line-height:1.65!important;max-width:680px!important}
+.meldo-promise{gap:8px;margin-top:24px}
+.promise{padding:13px;background:#0e1115;border-color:#222831;border-radius:10px}
+.promise b{font-size:12px}.promise span{font-size:11px;line-height:1.35}
+.btn.primary{background:linear-gradient(90deg,var(--accent2),var(--orange));color:#fff;border-color:transparent}
+.btn,.chip,.mini{font-weight:700;background:#171b21;border-color:#2a3039}
+.btn:hover,.chip:hover,.mini:hover{border-color:#444c58}
+.tabs button{font-weight:700}.tabs button.active{border-color:var(--accent2)}
+.ring{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--orange))}
+.ava,.bigava{background:linear-gradient(135deg,#333946,#20252d);color:#f4f2ee}
+.status,.tag{color:#c8aaff}
+.media{background:linear-gradient(135deg,#1b2027,#111419);border:1px solid #232a33;color:#cbd0d7}
+.project-link,.meta span,.form input,.form textarea,.form select,.commentbox input{background:#15191f;border-color:#272d36}
+.post-actions button:hover,.post-actions .liked{color:#ff6a9c;background:#15191f}
+.commentbox button,.toast{background:linear-gradient(90deg,var(--accent2),var(--orange));color:white}
+.challenge{background:linear-gradient(135deg,#18131a,#12151a);border:1px solid #28242c}
+.spotHero{background:linear-gradient(135deg,#12161b,#0c0f13)}
+.spotHero:after{color:rgba(255,255,255,.018)}
+.spotVisual{background:linear-gradient(135deg,rgba(138,92,255,.14),rgba(241,69,141,.10),rgba(255,122,69,.10))}
+.pageTitle{font-weight:760;letter-spacing:-1.3px}
+
+.category-browser{margin:16px 0 20px}.category-browser .label{font-size:10px;letter-spacing:1.7px;color:var(--muted);font-weight:800;margin-bottom:10px}.category-list{display:flex;gap:8px;flex-wrap:wrap}.category-list button{cursor:pointer}.category-list button.active{background:#f4f2ee;color:#111318;border-color:#f4f2ee}.category-summary{padding:14px 16px;border:1px solid #242a32;background:#111419;border-radius:12px;margin:0 0 16px;color:var(--muted);font-size:12px}.category-summary b{color:var(--text)}
+@media(max-width:760px){.meldo-hero{padding:24px!important}.meldo-hero h1{letter-spacing:-2.5px}}
+
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="left">
+  <div class="brand brand-lockup" onclick="go('home',document.querySelector('.nav button'))">
+      <div class="meldo-mark" aria-label="Meldo mark"><span></span><span></span></div>
+      <div class="brand-text">
+        <strong>MELDO</strong>
+        <small>MAKE SOMETHING.</small>
+      </div>
+    </div>
+  <nav class="nav">
+    <button class="active" onclick="go('home',this)">Home</button>
+    <button onclick="go('explore',this)">Explore</button>
+    <button onclick="go('spotlight',this)">Spotlight</button>
+    <button onclick="go('challenges',this)">Challenges</button>
+    <button onclick="openMessages()">Messages</button>
+    <button onclick="openProfile('Alex')">You</button>
+  </nav>
+  <button class="create" onclick="openCreate()">Create</button>
+</aside>
+
+<main class="center">
+  <div class="top"><input id="search" class="search" placeholder="Search ideas, projects, creators..." oninput="render()"></div>
+  <div id="content"></div>
+</main>
+
+<aside class="right">
+  <div class="sidecard">
+    <h3>Creators to meet</h3>
+    <div class="personrow"><div class="ava">M</div><div><b>Maya</b><small style="color:var(--muted);display:block">Singer / songwriter</small></div><button class="mini" onclick="toggleFollow(this)">Follow</button></div>
+    <div class="personrow"><div class="ava">J</div><div><b>Jordan</b><small style="color:var(--muted);display:block">Game designer</small></div><button class="mini" onclick="toggleFollow(this)">Follow</button></div>
+    <div class="personrow"><div class="ava">S</div><div><b>Sam</b><small style="color:var(--muted);display:block">Cinematographer</small></div><button class="mini" onclick="toggleFollow(this)">Follow</button></div>
+  </div>
+  <div class="sidecard">
+    <h3>Made this week</h3>
+    <div class="challenge"><div class="tag">COMMUNITY PICK</div><h4>AFTER DARK</h4><p>Started from a guitar riff. Now 6 creatives across music, film and design are building the release together.</p><button class="btn primary square" onclick="go('spotlight',document.querySelectorAll('.nav button')[2])">View spotlight</button></div>
+  </div>
+  <div class="sidecard" style="background:transparent;border-color:#20262e">
+    <div style="font-size:11px;letter-spacing:1.6px;color:var(--muted);font-weight:800">MELDO</div>
+    <div style="font-size:20px;margin-top:6px;font-weight:750">Make something.</div>
+    <p style="color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:0">Connect. Collaborate. Create. Share.</p>
+  </div>
+</aside>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let page='home', tab='forYou', exploreTab='projects', categoryFilter='All';
+const categories=['All','Music','Film & Video','Games','Graphic Design','Art & Illustration','Photography','Animation','Fashion','Dance','Writing'];
+const users=[
+ {name:'Maya',role:'Singer / Songwriter',skills:['Vocals','Lyrics','R&B'],status:'Open to Collaborate'},
+ {name:'Jordan',role:'Game Designer',skills:['Unity','Narrative','Level Design'],status:'Working on Projects'},
+ {name:'Sam',role:'Cinematographer',skills:['Film','Lighting','Editing'],status:'Open to Collaborate'},
+ {name:'Kai',role:'3D Artist',skills:['Blender','Characters','Worldbuilding'],status:'Available for Paid Work'},
+ {name:'Lena',role:'Graphic Designer',skills:['Branding','Album Art','Merch'],status:'Open to Collaborate'}
+];
+const projects=[
+ {title:'MIDNIGHT',cats:['Music','Graphic Design'],desc:'Independent R&B single evolving from a chorus demo into a full release.',needs:['Guitarist','Producer','Graphic Designer'],status:'Recording'},
+ {title:'NEON CITY',cats:['Games','Music','Animation'],desc:'Indie cyberpunk game with an original world, soundtrack and narrative system.',needs:['3D Artist','Sound Designer','Writer'],status:'Recruiting'},
+ {title:'THE LAST TRAIN',cats:['Film & Video','Music'],desc:'Short film assembling its creative team around a tense, minimal story.',needs:['Composer','Actor','Editor'],status:'Pre-production'},
+ {title:'STREET / FORM',cats:['Fashion','Dance','Photography','Graphic Design'],desc:'Cross-discipline fashion editorial mixing streetwear, movement and photography.',needs:['Stylist','Dancer','Photographer'],status:'Concept'},
+ {title:'OPEN SIGNAL',cats:['Graphic Design','Animation'],desc:'A visual identity project expanding from a static mark into motion, digital and campaign assets.',needs:['Motion Designer','Typographer','3D Artist'],status:'Recruiting'},
+ {title:'ROOM 17',cats:['Writing','Art & Illustration'],desc:'A collaborative short story evolving into an illustrated digital release.',needs:['Illustrator','Editor','Lettering Artist'],status:'Drafting'}
+];
+const ideas=[
+ {title:'Dark R&B Guitar',cats:['Music'],desc:'27-second guitar idea. Looking for someone to change its direction.',people:12},
+ {title:'Neon Character',cats:['Games','Animation'],desc:'A character sketch that could become part of a game or animation.',people:7},
+ {title:'Fragments',cats:['Film & Video','Writing'],desc:'Short-film idea about memory, told without dialogue.',people:19},
+ {title:'Future Skin',cats:['Art & Illustration','Fashion','Graphic Design'],desc:'Digital textures exploring what fashion could look like in 2050.',people:5},
+ {title:'Album System',cats:['Graphic Design','Music'],desc:'A modular cover-art and typography system looking for a musician or label project to build around.',people:9}
+];
+let posts=[
+ {id:1,user:'Maya',role:'Singer / Songwriter',time:'12 min',status:'Open to Collaborate',text:'I recorded this chorus last night and it needs live guitar and a more interesting rhythm. Anyone want to jump on it?',type:'audio',project:'MIDNIGHT',likes:48,liked:false,comments:['Kai: This would sound huge with live drums.'],open:true},
+ {id:2,user:'Jordan',role:'Game Designer',time:'32 min',status:'Working on Projects',text:'Building a small cyberpunk game. The world is getting there, but it still needs a unique sound identity.',type:'image',project:'NEON CITY',likes:31,liked:false,comments:['Maya: I would love to experiment with vocals for this.'],open:true},
+ {id:3,user:'Sam',role:'Cinematographer',time:'1 hr',status:'Open to Collaborate',text:'Testing a low-light look for a short film. Interested in a composer who can make something tense and minimal.',type:'video',project:'THE LAST TRAIN',likes:72,liked:false,comments:['Jordan: This visual language is incredible.'],open:true},
+ {id:4,user:'Kai',role:'3D Artist',time:'3 hr',status:'Available for Paid Work',text:'Quick character study. Not attached to a project yet — if anyone has a game, animation or music visual idea that fits this style, let me know.',type:'image',project:null,likes:29,liked:false,comments:[],open:false}
+];
+
+function q(){return document.getElementById('search').value.toLowerCase()}
+function media(t){if(t==='audio')return '<div class="media">⌁⌁⌁⌁⌁⌁⌁</div>';if(t==='video')return '<div class="media">▶</div>';return '<div class="media">✦</div>'}
+function postCard(p){return `<article class="card post">
+<div class="post-head"><div class="ava">${p.user[0]}</div><div><b onclick="openProfile('${p.user}')">${p.user}</b><small>${p.role} · ${p.time}</small><div class="status">● ${p.status}</div></div><div class="more">•••</div></div>
+<div class="post-body"><p>${p.text}</p>${media(p.type)}${p.project?`<div class="project-link" onclick="openProject('${p.project}')"><strong>🚀 ${p.project}</strong><small>Open project · looking for collaborators</small></div>`:''}</div>
+<div class="post-actions"><button class="${p.liked?'liked':''}" onclick="likePost(${p.id})">♡ ${p.likes}</button><button onclick="focusComment(${p.id})">💬 ${p.comments.length}</button><button onclick="toast('Saved')">🔖 Save</button><button onclick="toast('Shared')">↗ Share</button><button onclick="${p.project?`requestJoin('${p.project}')`:`buildOn('${p.user}')`}">${p.project?'＋ Join':'✦ Build'}</button></div>
+<div class="comments">${p.comments.map(c=>`<div class="comment">${c}</div>`).join('')}<div class="commentbox"><input id="c${p.id}" placeholder="Add a comment..."><button onclick="comment(${p.id})">Post</button></div></div>
+</article>`}
+
+function home(){
+ let list=posts.filter(p=>JSON.stringify(p).toLowerCase().includes(q()));
+ if(tab==='following')list=list.filter(p=>['Maya','Sam'].includes(p.user));
+ if(tab==='open')list=list.filter(p=>p.open);
+ return `<section class="card meldo-hero" style="padding:24px;margin-bottom:14px">
+   <div class="playground-label">CREATIVE COLLABORATION, BUILT IN</div>
+   <h1>Make <span class="brand-gradient">something.</span></h1>
+   <p style="color:var(--muted);line-height:1.55">Bring an idea. Find your people. Build it together. MELDO is where unfinished work becomes something bigger — across music, film, games, graphic design, art, animation, fashion, dance, photography and writing.</p>
+   <div class="row wrap" style="margin-top:16px">
+     <button class="btn primary square" onclick="openCreate()">＋ Start a project</button>
+     <button class="btn square" onclick="go('explore',document.querySelectorAll('.nav button')[1])">Explore projects</button>
+   </div>
+   <div class="meldo-promise">
+     <div class="promise"><b>People</b><span>Find the right people for the idea.</span></div>
+     <div class="promise"><b>Ideas</b><span>Share the spark before it is finished.</span></div>
+     <div class="promise"><b>Collaboration</b><span>Contribute, build and move it forward.</span></div>
+     <div class="promise"><b>Creation</b><span>Turn shared ideas into finished work.</span></div>
+   </div>
+ </section>
+ <div class="stories">${['A','M','J','S','K','L'].map((x,i)=>`<div class="story"><div class="ring"><div>${x}</div></div>${['You','Maya','Jordan','Sam','Kai','Lena'][i]}</div>`).join('')}</div>
+ <section class="composer"><textarea id="composerText" placeholder="What are you creating? Share a WIP, idea, clip, sketch or project update..."></textarea><div class="row between wrap"><div class="row wrap"><button class="chip">🎵 Audio</button><button class="chip">🖼 Image</button><button class="chip">🎬 Video</button><button class="chip">🚀 Project</button></div><button class="btn primary square" onclick="addPost()">Post</button></div></section>
+ <div class="tabs"><button class="${tab==='forYou'?'active':''}" onclick="setTab('forYou')">For You</button><button class="${tab==='following'?'active':''}" onclick="setTab('following')">Following</button><button class="${tab==='open'?'active':''}" onclick="setTab('open')">Open Projects</button></div>
+ ${list.map(postCard).join('')}`;
+}
+function categoryBrowser(){
+ return `<div class="category-browser"><div class="label">EXPLORE BY CATEGORY</div><div class="category-list">${categories.map(c=>`<button class="chip ${categoryFilter===c?'active':''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c}</button>`).join('')}</div></div>`;
+}
+function matchesCategory(x){return categoryFilter==='All'||(x.cats||[]).includes(categoryFilter)}
+function categoryTags(cats){return (cats||[]).map(c=>`<span class="tag">${c}</span>`).join(' ')}
+function explore(){
+ const chips=`<div class="tabs"><button class="${exploreTab==='projects'?'active':''}" onclick="setExplore('projects')">Projects</button><button class="${exploreTab==='ideas'?'active':''}" onclick="setExplore('ideas')">Ideas</button><button class="${exploreTab==='people'?'active':''}" onclick="setExplore('people')">People</button></div>`;
+ const browser=categoryBrowser()+ (categoryFilter!=='All'?`<div class="category-summary"><b>${categoryFilter}</b> · Showing projects, ideas and collaborators connected to this discipline. Cross-disciplinary work can appear in more than one category.</div>`:'');
+ if(exploreTab==='projects') return `<h1 class="pageTitle">Explore projects</h1>${browser}${chips}<div class="grid">${projects.filter(x=>matchesCategory(x)&&JSON.stringify(x).toLowerCase().includes(q())).map(p=>`<article class="card"><div class="row wrap">${categoryTags(p.cats)}</div><h3>${p.title}</h3><p>${p.desc}</p><div class="meta">${p.needs.map(n=>`<span>${n}</span>`).join('')}</div><div class="row between"><small style="color:var(--muted)">● ${p.status}</small><button class="btn primary square" onclick="openProject('${p.title}')">Open</button></div></article>`).join('')}</div>`;
+ if(exploreTab==='ideas') return `<h1 class="pageTitle">Explore ideas</h1>${browser}${chips}<div class="grid">${ideas.filter(x=>matchesCategory(x)&&JSON.stringify(x).toLowerCase().includes(q())).map(i=>`<article class="card"><div class="row wrap">${categoryTags(i.cats)}</div><h3>${i.title}</h3><p>${i.desc}</p><div class="meta"><span>${i.people} creatives exploring</span></div><button class="btn primary square" onclick="buildOn('${i.title}')">Build on this</button></article>`).join('')}</div>`;
+ const skillMap={'Music':['Vocals','Lyrics','R&B'],'Film & Video':['Film','Lighting','Editing'],'Games':['Unity','Narrative','Level Design'],'Graphic Design':['Branding','Album Art','Merch'],'Art & Illustration':['Blender','Characters','Worldbuilding'],'Photography':['Film','Lighting','Editing'],'Animation':['Blender','Characters','Worldbuilding'],'Fashion':['Branding','Merch'],'Dance':['Film','Performance'],'Writing':['Lyrics','Narrative']};
+ const people=users.filter(u=>categoryFilter==='All'||(skillMap[categoryFilter]||[]).some(sk=>u.skills.includes(sk))||u.role.toLowerCase().includes(categoryFilter.toLowerCase().split(' ')[0]));
+ return `<h1 class="pageTitle">Find collaborators</h1>${browser}${chips}<div class="people">${people.filter(x=>JSON.stringify(x).toLowerCase().includes(q())).map(u=>`<article class="card person"><div class="bigava">${u.name[0]}</div><h3>${u.name}</h3><p>${u.role}</p><div class="status">● ${u.status}</div><div class="meta" style="justify-content:center">${u.skills.map(s=>`<span>${s}</span>`).join('')}</div><div class="row" style="justify-content:center"><button class="btn square" onclick="toggleFollow(this)">Follow</button><button class="btn primary square" onclick="toast('Collaboration invite sent')">Collaborate</button></div></article>`).join('')}</div>`;
+}
+
+function spotlight(){
+ const winners=[
+  ['🎵','Music','AFTER DARK','A guitar riff evolved into a full audiovisual release through eight collaborators.','8 creatives','4 countries'],
+  ['🎮','Games','SIGNAL LOST','A compact horror experience built around sound, atmosphere and collaborative worldbuilding.','12 creatives','3 countries'],
+  ['🎬','Film & Video','THE LAST TRAIN','A dialogue-free short created through cinematography, performance and composition.','9 creatives','2 countries'],
+  ['🎨','Art & Illustration','FUTURE SKIN','A shared visual world built from illustration, 3D textures and fashion references.','6 creatives','5 countries'],
+  ['📸','Photography','STILL MOVING','A portrait series combining dancers, stylists and photographers across multiple cities.','7 creatives','3 countries'],
+  ['👗','Fashion','STREET / FORM','Streetwear, movement and image-making combined into a collaborative editorial.','10 creatives','4 countries'],
+  ['💃','Dance','STATIC / BODY','Choreography developed in response to music uploaded by producers around the world.','11 creatives','6 countries'],
+  ['🖥','Graphic Design','OPEN SIGNAL','A collaborative identity system that expanded into motion, web and physical design.','5 creatives','3 countries'],
+  ['✍️','Writing','ROOM 17','One paragraph became a collaborative story and illustrated digital release.','14 creatives','7 countries']
+ ];
+ return `<section class="card spotHero">
+   <div class="playground-label">MELDO MADE THIS WEEK</div>
+   <h1>What the community<br><span class="brand-gradient">made this week.</span></h1>
+   <p>Every creative category gets its own weekly spotlight. The goal is not popularity — it is to recognise the projects that best show what happens when different people, skills and ideas are melded together.</p>
+ </section>
+ <section class="card overallSpot">
+   <div class="spotVisual">✦</div>
+   <div>
+     <div class="spotBadge">🏆 OVERALL PROJECT OF THE WEEK</div>
+     <div class="tag" style="margin-top:16px">MUSIC · FILM · DESIGN</div>
+     <h2 style="font-size:35px;margin:7px 0">AFTER DARK</h2>
+     <p style="color:var(--muted);line-height:1.5">One unfinished guitar riff became a cross-discipline release after eight creatives across four countries added vocals, production, dance, film and artwork.</p>
+     <div class="meta"><span>8 creatives</span><span>4 countries</span><span>5 disciplines</span></div>
+     <button class="btn primary square" onclick="openProject('AFTER DARK')">Explore project</button>
+   </div>
+ </section>
+ <div class="row between wrap" style="margin:20px 0 12px"><div><div class="playground-label">CATEGORY WINNERS</div><h2 style="margin:4px 0">Projects of the Week</h2></div><small style="color:var(--muted)">New every week</small></div>
+ <div class="spotTabs">${winners.map(w=>`<button class="chip">${w[0]} ${w[1]}</button>`).join('')}</div>
+ <div class="spotGrid">${winners.map(w=>`<article class="card spotCard">
+   <div class="tag">${w[0]} ${w[1]} PROJECT OF THE WEEK</div>
+   <h3>${w[2]}</h3>
+   <p>${w[3]}</p>
+   <div class="spotStats"><span>${w[4]}</span><span>•</span><span>${w[5]}</span></div>
+   <div class="spotCredit"><b>Built by</b> creators across the MELDO community</div>
+   <button class="btn square" onclick="openProject('${w[2]}')">View project</button>
+ </article>`).join('')}</div>
+ <section class="shareSpot">
+   <div class="tag">SHAREABLE WINNER CARD</div>
+   <h2 style="margin:7px 0">🏆 AFTER DARK</h2>
+   <p>MUSIC PROJECT OF THE WEEK · Built by Alex, Maya, Jordan, Sam + 4 others.</p>
+   <strong>MELDO</strong><br><small>Make something.</small>
+   <div style="margin-top:14px"><button class="btn square" onclick="toast('Winner card shared')">↗ Share achievement</button></div>
+ </section>`;
+}
+
+function challenges(){
+ return `<h1 class="pageTitle">MELDO Weekly</h1><div class="projectHero card"><div class="tag">THIS WEEK'S CHALLENGE</div><h1>CHAOS</h1><p>Create anything inspired by chaos. Music, film, graphic design, art, games, dance, fashion or something completely different. Cross-discipline collaborations encouraged.</p><div class="row wrap"><button class="btn primary square" onclick="toast('Challenge joined')">Join challenge</button><button class="btn square" onclick="toast('Challenge saved')">Save</button></div></div>
+ <div class="grid"><article class="card"><div class="tag">BEST COLLABORATION</div><h3>After Dark</h3><p>6 creatives across music, film and design.</p></article><article class="card"><div class="tag">MOST ORIGINAL</div><h3>Signal Loss</h3><p>A short game built around audio distortion.</p></article><article class="card"><div class="tag">EMERGING CREATIVE</div><h3>Lena</h3><p>Album artwork and interactive merch concept.</p></article></div>`;
+}
+function render(){document.getElementById('content').innerHTML=page==='home'?home():page==='explore'?explore():page==='spotlight'?spotlight():challenges()}
+function go(p,el){page=p;document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');render();scrollTo(0,0)}
+function setTab(t){tab=t;render()} function setExplore(t){exploreTab=t;render()} function setCategory(c){categoryFilter=c;page='explore';render();scrollTo(0,0)}
+function likePost(id){let p=posts.find(x=>x.id===id);p.liked=!p.liked;p.likes+=p.liked?1:-1;render()}
+function focusComment(id){document.getElementById('c'+id)?.focus()}
+function comment(id){let i=document.getElementById('c'+id);if(!i.value.trim())return;posts.find(x=>x.id===id).comments.push('Alex: '+i.value.trim());render()}
+function addPost(){let t=document.getElementById('composerText');if(!t.value.trim())return;posts.unshift({id:Date.now(),user:'Alex',role:'Creative Explorer',time:'now',status:'Open to Collaborate',text:t.value.trim(),type:'image',project:null,likes:0,liked:false,comments:[],open:false});t.value='';render();toast('Posted')}
+function toggleFollow(btn){btn.textContent=btn.textContent==='Follow'?'Following':'Follow'}
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',1900)}
+function openOverlay(html){document.getElementById('modal').innerHTML='<button class="close" onclick="closeOverlay()">×</button>'+html;document.getElementById('overlay').classList.add('show')}
+function closeOverlay(){document.getElementById('overlay').classList.remove('show')}
+function openCreate(){openOverlay(`<h2>Create</h2><div class="form"><label>TYPE</label><select id="ctype"><option>Post</option><option>Idea</option><option>Project</option></select><label>TITLE</label><input id="ctitle" placeholder="What are you starting?"><label>DESCRIPTION</label><textarea id="cdesc" placeholder="Describe it and what you need from collaborators"></textarea><button class="btn primary square" onclick="createThing()">Publish</button></div>`)}
+function createThing(){toast('Published to MELDO');closeOverlay()}
+function openMessages(){openOverlay(`<h2>Messages</h2><div class="card" style="padding:12px;margin-bottom:8px"><b>Maya</b><p style="color:var(--muted)">I can record a rough vocal tonight.</p></div><div class="card" style="padding:12px;margin-bottom:8px"><b>Jordan</b><p style="color:var(--muted)">I added you to NEON CITY.</p></div><div class="card" style="padding:12px"><b>Sam</b><p style="color:var(--muted)">Free this weekend to shoot?</p></div>`)}
+function openProfile(name){
+ const u=users.find(x=>x.name===name)||{name:'Alex',role:'Multidisciplinary Creative',skills:['Music','Film','Design'],status:'Open to Collaborate'};
+ openOverlay(`<div class="row" style="align-items:flex-start"><div class="bigava">${u.name[0]}</div><div><h2 style="margin:0">${u.name}</h2><p style="color:var(--muted);margin:4px 0">${u.role}</p><div class="status">● ${u.status}</div></div></div><div class="row" style="margin:16px 0;gap:24px"><div><b>23</b><small style="display:block;color:var(--muted)">Projects</small></div><div><b>41</b><small style="display:block;color:var(--muted)">Collaborators</small></div><div><b>7</b><small style="display:block;color:var(--muted)">Disciplines</small></div></div><div class="meta">${u.skills.map(s=>`<span>${s}</span>`).join('')}</div><div class="tabs"><button class="active">Work</button><button>Projects</button><button>Ideas</button><button>Contributions</button></div><div class="project-link"><strong>AFTER DARK</strong><small>Music · Film · Design</small></div><div class="project-link"><strong>NEON CITY</strong><small>Games · Sound · 3D</small></div>`)}
+function requestJoin(name){toast('Join request sent to '+name)}
+function buildOn(name){openOverlay(`<h2>Build on this</h2><p style="color:var(--muted)">Add your contribution to <b>${name}</b>.</p><div class="form"><select><option>Audio</option><option>Image</option><option>Video</option><option>Text / concept</option></select><textarea placeholder="What are you adding or changing?"></textarea><button class="btn primary square" onclick="toast('Contribution submitted');closeOverlay()">Submit contribution</button></div>`)}
+function openProject(name){
+ const p=projects.find(x=>x.title===name)||{title:name,cats:['Cross-discipline'],desc:'A community-built creative project.',needs:['Contributor','Designer','Producer'],status:'Active'};
+ openOverlay(`<div class="projectHero card"><div class="row wrap">${categoryTags(p.cats)}</div><h1>${p.title}</h1><p>${p.desc}</p><div class="meta">${p.needs.map(n=>`<span>${n}</span>`).join('')}</div><div class="row wrap"><button class="btn primary square" onclick="requestJoin('${p.title}')">Join project</button><button class="btn square" onclick="toast('Project followed')">Follow</button></div></div>
+ <div class="projectTabs"><button class="btn square">Overview</button><button class="btn square">Team</button><button class="btn square">Files</button><button class="btn square">Tasks</button><button class="btn square">Credits</button></div>
+ <div class="workspace"><div class="card panel"><h3>Project workspace</h3><div class="task">☑ Concept locked</div><div class="task">☑ Initial collaborators joined</div><div class="task">☐ Record / build core asset</div><div class="task">☐ Visuals / packaging</div><div class="task">☐ Publish final</div><h3 style="margin-top:18px">Files</h3><div class="file">demo_v3.wav</div><div class="file">visual_direction.pdf</div><div class="file">cover_concept.png</div></div><div class="card panel"><h3>Credits</h3><div class="credit"><b>Maya</b><small style="display:block;color:var(--muted)">Vocals / Writing</small></div><div class="credit"><b>Sam</b><small style="display:block;color:var(--muted)">Video / Camera</small></div><div class="credit"><b>Lena</b><small style="display:block;color:var(--muted)">Artwork / Merch</small></div></div></div>`)}
+const params=new URLSearchParams(location.search);
+if(params.get('category')){categoryFilter=params.get('category');page='explore';exploreTab=params.get('view')||'projects';}
+render();
+</script>
+</body>
+</html>
